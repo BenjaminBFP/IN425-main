@@ -86,19 +86,19 @@ class RRTConnect(Node):
         self.get_logger().info(f"x_map= {x}")
         self.get_logger().info(f"y_map = {y}")
    
-        width = self.map.info.width/2
-        height = self.map.info.height/2
+        width = self.map.info.width
+        height = self.map.info.height
 
-        dx = width/2
-        dy = height/2
+        dx = -self.map.info.origin.position.x
+        dy = -self.map.info.origin.position.y
         res = round(self.map.info.resolution,3)
     
-        origin = np.array([[1,0,0,dx],[0,1,0,dy],[0,0,1,0],[0,0,0,1]])@np.transpose(np.array([x,y,0,1]))
+        origin = np.array([[1,0,0,dx],[0,1,0,   dy],[0,0,1,0],[0,0,0,1]])@np.transpose(np.array([x,y,0,1]))
         origin_discrete = np.array([[1/res,0],[0,1/res]])@origin[:2]
 
-        self.get_logger().info(f"o = {origin[:2]}, res = {res}")
+        self.get_logger().info(f"height = {height},width = {width}, res = {res}")
 
-        co_image = np.array([[1,0,0,0],[0,-1,0,height],[0,0,1,0],[0,0,0,1]])@np.transpose([int(origin_discrete[0]),int(origin_discrete[1]),0,1])
+        co_image = np.array([[1,0,0,0],[0,-1,0,height-1],[0,0,1,0],[0,0,0,1]])@np.transpose([int(origin_discrete[0]),int(origin_discrete[1]),0,1])
 
 
         x_image = co_image[0]
