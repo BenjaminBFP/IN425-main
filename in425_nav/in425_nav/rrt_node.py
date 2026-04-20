@@ -10,7 +10,7 @@ from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 
 import cv2
-
+import numpy as np
 
 class RRTConnect(Node):
     def __init__(self, K=0, dq=0):
@@ -77,8 +77,36 @@ class RRTConnect(Node):
     # **********************************
     def goalCb(self, msg):
         """ TODO - Get the goal pose """
-        #get the goal pose here
-        #....
+        #self.get_logger().info(f"goal position of path plannig = {msg.pose.position}")
+
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+        z = msg.pose.position.z
+        
+        self.get_logger().info(f"x_map= {x}")
+        self.get_logger().info(f"y_map = {y}")
+   
+        width = self.map.info.width/2
+        height = self.map.info.height/2
+
+        dx = width/2
+        dy = height/2
+        res = round(self.map.info.resolution,3)
+    
+        origin = np.array([[1,0,0,dx],[0,1,0,dy],[0,0,1,0],[0,0,0,1]])@np.transpose(np.array([x,y,0,1]))
+        origin_discrete = np.array([[1/res,0],[0,1/res]])@origin[:2]
+
+        self.get_logger().info(f"o = {origin[:2]}, res = {res}")
+
+        co_image = np.array([[1,0,0,0],[0,-1,0,height],[0,0,1,0],[0,0,0,1]])@np.transpose([int(origin_discrete[0]),int(origin_discrete[1]),0,1])
+
+
+        x_image = co_image[0]
+        y_image = co_image[1]
+
+        self.get_logger().info(f"x_image= {x_image}")
+        self.get_logger().info(f"y_image = {y_image}")
+
         self.run()
 
 
