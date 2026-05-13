@@ -33,6 +33,9 @@ class RRTConnect(Node):
 
         self.x_goal_image = 0
         self.y_goal_image = 0
+
+        self.x_robot_image = 0 
+        self.y_robot_image = 0
         #TODO: create the related image
 
     def buildMapImage(self):
@@ -123,10 +126,10 @@ class RRTConnect(Node):
 
         self.get_robot_pose()
         
-        x_robot_image, y_robot_image = self.transition_map_image(self.robot_pose.x,self.robot_pose.y)
+        self.x_robot_image, self.y_robot_image = self.transition_map_image(self.robot_pose.x,self.robot_pose.y)
         
-        self.get_logger().info(f"robot image x = {x_robot_image}")
-        self.get_logger().info(f"robot image y = {y_robot_image}")
+        self.get_logger().info(f"robot image x = {self.x_robot_image}")
+        self.get_logger().info(f"robot image y = {self.y_robot_image}")
 
         #self.run()
 
@@ -154,7 +157,7 @@ class RRTConnect(Node):
     def run(self):
         """ TODO - Implement the RRT-Connect algorithm """
         
-        Tstart = np.array([[self.robot_pose.x],[self.robot_pose.y],[0],[1]])
+        Tstart = np.array([[self.x_robot_image],[self.y_robot_image],[0],[1]])
         Tgoal = np.array([[self.x_goal_image],[self.y_goal_image],[0],[1]])
         
         List_Tstart = [Tstart]
@@ -181,8 +184,7 @@ class RRTConnect(Node):
     def rand_free_conf(self):
         """ Sample a random configuration in the free space """
         drand = np.array([[r.randint(-30,30)],[r.randint(-30,30)],[0],[0]])
-        x_robot_image, y_robot_image = self.transition_map_image(self.robot_pose.x,self.robot_pose.y)
-        qrand = np.array([[x_robot_image],[y_robot_image],[0],[1]]) + drand
+        qrand = np.array([[self.x_robot_image],[self.y_robot_image],[0],[1]]) + drand
         return qrand
 
 
