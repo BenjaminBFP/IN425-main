@@ -178,8 +178,26 @@ class RRTConnect(Node):
         """ Move the tree by one incremental step toward q.
             Stop immediately if an obstacle is encountered.
         """
+        direction = qrand - Tstart
+        angle = np.arctan2(direction[1], direction[0])
+        qnew = Tstart + self.dq * np.array([[np.cos(angle)], [np.sin(angle)], [0], [0]])
+        if self.is_collision(qnew):
+            return None
+        else:             
+            return qnew
 
-        pass
+    def is_collision(self, qnew):
+        """ Check if a point is in collision """
+        width  = self.map.info.width   
+        height = self.map.info.height  
+        data   = np.array(self.map.data, dtype=np.int8).reshape((height, width))  
+
+        if qnew[0] < 0 or qnew[0] >= width or qnew[1] < 0 or qnew[1] >= height:
+            return True 
+        elif data[int(qnew[1]), int(qnew[0])] >= 1:  # OccupancyGrid data is row-major (y,x)
+            return True      
+        else:
+            return False
 
     def connect(self, Tgoal, qnew):
         """ Repeatedly call EXTEND(tree, q).
