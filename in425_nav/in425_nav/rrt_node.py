@@ -229,8 +229,8 @@ class RRTConnect(Node):
         temp = Tstart 
         Tstart = Tgoal
         Tgoal = temp 
-        
-        pass
+
+        return Tstart, Tgoal
         
         
     # **********************************
