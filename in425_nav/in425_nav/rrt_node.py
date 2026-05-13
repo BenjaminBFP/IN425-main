@@ -8,7 +8,7 @@ from geometry_msgs.msg import PoseStamped, Pose2D
 from tf2_ros import TransformException
 from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
-
+import numpy as np
 import cv2
 
 
@@ -29,9 +29,35 @@ class RRTConnect(Node):
 
         """ Load the map and create the related image"""
         self.getMap()
+        self.buildMapImage()
         #TODO: create the related image
 
+    def buildMapImage(self):
+        """Construit une image OpenCV à partir de l'OccupancyGrid"""
 
+        # 1. Récupérer les dimensions et les données brutes
+        width  = self.map.info.width   # colonnes (pixels)
+        height = self.map.info.height  # lignes   (pixels)
+        data   = np.array(self.map.data, dtype=np.int8).reshape((height, width))
+
+        # 2. Créer l'image en niveaux de gris (uint8)
+        img = np.zeros((height, width), dtype=np.uint8)
+
+        UNEXPLORED_VALUE = -1
+        EXPLORED_VALUE   = 0
+        OBSTACLE_THRESHOLD = 100   # toute valeur >= 1 est un obstacle
+
+        img[data == UNEXPLORED_VALUE]      = 80   # gris foncé
+        img[data == EXPLORED_VALUE]        = 220  # gris très clair
+        img[data == OBSTACLE_THRESHOLD]    = 0    # noir
+
+        # 3. Retourner l'image (axe Y inversé entre OccupancyGrid et image)
+        self.map_img = cv2.flip(img, 0)
+        cv2.imwrite("/tmp/map_debug.png", self.map_img)
+        self.get_logger().info(f"Image sauvegardée — min:{self.map_img.min()} max:{self.map_img.max()} unique:{np.unique(self.map_img)}")
+
+        cv2.imshow("Map", self.map_img)
+        cv2.waitKey(0)
     def __del__(self):
         """ Called when the object is destroyed """
         cv2.destroyAllWindows() #destroy all the OpenCV windows you displayed
@@ -56,6 +82,7 @@ class RRTConnect(Node):
                 except Exception as e:
                     self.get_logger().info(f"Service call failed {e}")
                 return
+
 
 
     # **********************************
