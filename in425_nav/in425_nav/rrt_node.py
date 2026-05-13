@@ -10,7 +10,7 @@ from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 import numpy as np
 import cv2
-
+import numpy as np
 
 class RRTConnect(Node):
     def __init__(self, K=0, dq=0):
@@ -29,7 +29,13 @@ class RRTConnect(Node):
 
         """ Load the map and create the related image"""
         self.getMap()
+<<<<<<< HEAD
         self.buildMapImage()
+=======
+
+        self.x_goal_image = 0
+        self.y_goal_image = 0
+>>>>>>> f38d59779d54340fd255eb5252729e40e56d4e2b
         #TODO: create the related image
 
     def buildMapImage(self):
@@ -104,14 +110,42 @@ class RRTConnect(Node):
     # **********************************
     def goalCb(self, msg):
         """ TODO - Get the goal pose """
-        #get the goal pose here
-        #....
+        #self.get_logger().info(f"goal position of path plannig = {msg.pose.position}")
+
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+    
+        self.get_logger().info(f"x_map= {x}")
+        self.get_logger().info(f"y_map = {y}")
+   
+        width = self.map.info.width
+        height = self.map.info.height
+
+        dx = -self.map.info.origin.position.x
+        dy = -self.map.info.origin.position.y
+        res = round(self.map.info.resolution,3)
+    
+        origin = np.array([[1,0,0,dx],[0,1,0,   dy],[0,0,1,0],[0,0,0,1]])@np.transpose(np.array([x,y,0,1]))
+        origin_discrete = np.array([[1/res,0],[0,1/res]])@origin[:2]
+
+        self.get_logger().info(f"height = {height},width = {width}, res = {res}")
+
+        co_image = np.array([[1,0,0,0],[0,-1,0,height-1],[0,0,1,0],[0,0,0,1]])@np.transpose([int(origin_discrete[0]),int(origin_discrete[1]),0,1])
+
+
+        self.x_goal_image = co_image[0]
+        self.y_goal_image = co_image[1]
+
+        self.get_logger().info(f"x_image= {self.x_goal_image}")
+        self.get_logger().info(f"y_image = {self.y_goal_image}")
+
         self.run()
 
 
     # **********************************
     def run(self):
         """ TODO - Implement the RRT-Connect algorithm """
+
         pass
         
     # **********************************
