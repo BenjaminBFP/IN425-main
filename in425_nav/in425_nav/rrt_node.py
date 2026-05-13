@@ -61,6 +61,7 @@ class RRTConnect(Node):
 
         cv2.imshow("Map", self.map_img)
         cv2.waitKey(100)
+
     def __del__(self):
         """ Called when the object is destroyed """
         cv2.destroyAllWindows() #destroy all the OpenCV windows you displayed
@@ -155,17 +156,23 @@ class RRTConnect(Node):
         
         Tstart = np.array([[self.robot_pose.x],[self.robot_pose.y],[0],[1]])
         Tgoal = np.array([[self.x_goal_image],[self.y_goal_image],[0],[1]])
+        
         List_Tstart = [Tstart]
         List_Tgoal = [Tgoal]
+
         while np.linalg.norm(Tstart-Tgoal)>0.5:
             qrand = self.rand_free_conf()
             qnew = self.extend(Tstart, qrand)
+
             if qnew is not None:
                 List_Tstart.append(qnew)
                 qnew_goal = self.connect(Tgoal, qnew)
+                Tstart = qnew
+
                 if qnew_goal is not None:
                     List_Tgoal.append(qnew_goal)
                     break
+
             self.swap(Tstart, Tgoal)
             List_Tstart, List_Tgoal = List_Tgoal, List_Tstart
             Tstart, Tgoal = Tgoal, Tstart
@@ -173,7 +180,10 @@ class RRTConnect(Node):
         
     def rand_free_conf(self):
         """ Sample a random configuration in the free space """
-        pass
+        drand = np.array([[r.randint(-30,30)],[r.randint(-30,30)],[0],[0]])
+        x_robot_image, y_robot_image = self.transition_map_image(self.robot_pose.x,self.robot_pose.y)
+        qrand = np.array([[x_robot_image],[y_robot_image],[0],[1]]) + drand
+        return qrand
 
 
     def extend(self, Tstart, qrand):
