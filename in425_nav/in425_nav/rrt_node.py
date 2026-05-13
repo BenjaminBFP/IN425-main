@@ -29,8 +29,9 @@ class RRTConnect(Node):
 
         """ Load the map and create the related image"""
         self.getMap()
-        self.x_goal_map = 0
-        self.y_goal_map = 0
+
+        self.x_goal_image = 0
+        self.y_goal_image = 0
         #TODO: create the related image
 
 
@@ -81,11 +82,11 @@ class RRTConnect(Node):
         """ TODO - Get the goal pose """
         #self.get_logger().info(f"goal position of path plannig = {msg.pose.position}")
 
-        self.x_goal_map = msg.pose.position.x
-        self.y_goal_map = msg.pose.position.y
+        x = msg.pose.position.x
+        y = msg.pose.position.y
     
-        self.get_logger().info(f"x_map= {self.x_goal_map}")
-        self.get_logger().info(f"y_map = {self.y_goal_map}")
+        self.get_logger().info(f"x_map= {x}")
+        self.get_logger().info(f"y_map = {y}")
    
         width = self.map.info.width
         height = self.map.info.height
@@ -102,11 +103,11 @@ class RRTConnect(Node):
         co_image = np.array([[1,0,0,0],[0,-1,0,height-1],[0,0,1,0],[0,0,0,1]])@np.transpose([int(origin_discrete[0]),int(origin_discrete[1]),0,1])
 
 
-        x_image = co_image[0]
-        y_image = co_image[1]
+        self.x_goal_image = co_image[0]
+        self.y_goal_image = co_image[1]
 
-        self.get_logger().info(f"x_image= {x_image}")
-        self.get_logger().info(f"y_image = {y_image}")
+        self.get_logger().info(f"x_image= {self.x_goal_image}")
+        self.get_logger().info(f"y_image = {self.y_goal_image}")
 
         self.run()
 
