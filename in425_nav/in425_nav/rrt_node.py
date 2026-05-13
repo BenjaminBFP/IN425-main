@@ -29,13 +29,10 @@ class RRTConnect(Node):
 
         """ Load the map and create the related image"""
         self.getMap()
-<<<<<<< HEAD
         self.buildMapImage()
-=======
 
         self.x_goal_image = 0
         self.y_goal_image = 0
->>>>>>> f38d59779d54340fd255eb5252729e40e56d4e2b
         #TODO: create the related image
 
     def buildMapImage(self):
@@ -145,7 +142,22 @@ class RRTConnect(Node):
     # **********************************
     def run(self):
         """ TODO - Implement the RRT-Connect algorithm """
+        Tstart = np.array([[self.robot_pose.x],[self.robot_pose.y],[0],[1]])
+        Tgoal = np.array([[self.x_goal],[self.y_goal],[0],[1]])
 
+        
+    def Rand_free_conf():
+        """ TODO - Sample a random configuration in the free space """
+        pass
+
+    def Nearest_vertex():
+        """ TODO - Identifies the node of the graph closest to qrand """
+        pass
+
+    def New_conf():
+        """ TODO - qnew = qnear + ∆q in the direction of qrand """
+        pass
+    
         pass
         
     # **********************************
