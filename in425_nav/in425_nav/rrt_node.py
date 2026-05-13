@@ -257,17 +257,19 @@ class RRTConnect(Node):
     def connect(self, Tgoal, qnew):
         """ Repeatedly call EXTEND(tree, q).
             Continue until:
-            ▶ q is reached, or
+            ▶ qnew is reached, or
             ▶ an obstacle blocks further progress.
             This is the key innovation of RRT-Connect.
         """
-        while q != Tgoal[-1]:
-            qnew = self.extend(Tgoal, q)
-            if qnew is None:
-                return None
-            Tgoal.append(qnew)
-            q = qnew
-        pass
+        while qnew != Tgoal[-1] or not self.is_collision(qnew):
+            q = self.extend(Tgoal, qnew)
+            if q is None:
+                return False
+            Tgoal.append(q)
+            if Tgoal[-1] - qnew < self.dq: 
+                Tgoal.append(qnew)
+                return True
+        return
     
     def swap(self, Tstart, Tgoal):
         """ Swap the trees """
