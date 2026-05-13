@@ -115,6 +115,21 @@ class RRTConnect(Node):
         self.get_logger().info(f"x_map= {x}")
         self.get_logger().info(f"y_map = {y}")
    
+        self.x_goal_image, self.y_goal_image = self.transition_map_image(x,y)
+
+        self.get_logger().info(f"x_image= {self.x_goal_image}")
+        self.get_logger().info(f"y_image = {self.y_goal_image}")
+
+        self.get_robot_pose()
+        
+        self.get_logger().info(f"robot image x = {self.robot_pose.x}")
+        self.get_logger().info(f"robot image y = {self.robot_pose.y}")
+
+        #self.run()
+
+
+    def transition_map_image(self,x,y):
+        
         width = self.map.info.width
         height = self.map.info.height
 
@@ -129,14 +144,7 @@ class RRTConnect(Node):
 
         co_image = np.array([[1,0,0,0],[0,-1,0,height-1],[0,0,1,0],[0,0,0,1]])@np.transpose([int(origin_discrete[0]),int(origin_discrete[1]),0,1])
 
-
-        self.x_goal_image = co_image[0]
-        self.y_goal_image = co_image[1]
-
-        self.get_logger().info(f"x_image= {self.x_goal_image}")
-        self.get_logger().info(f"y_image = {self.y_goal_image}")
-
-        self.run()
+        return co_image[0],co_image[1]
 
 
     # **********************************
