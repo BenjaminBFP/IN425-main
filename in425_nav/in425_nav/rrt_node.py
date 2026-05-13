@@ -29,6 +29,8 @@ class RRTConnect(Node):
 
         """ Load the map and create the related image"""
         self.getMap()
+        self.x_goal_map = 0
+        self.y_goal_map = 0
         #TODO: create the related image
 
 
@@ -79,12 +81,11 @@ class RRTConnect(Node):
         """ TODO - Get the goal pose """
         #self.get_logger().info(f"goal position of path plannig = {msg.pose.position}")
 
-        x = msg.pose.position.x
-        y = msg.pose.position.y
-        z = msg.pose.position.z
-        
-        self.get_logger().info(f"x_map= {x}")
-        self.get_logger().info(f"y_map = {y}")
+        self.x_goal_map = msg.pose.position.x
+        self.y_goal_map = msg.pose.position.y
+    
+        self.get_logger().info(f"x_map= {self.x_goal_map}")
+        self.get_logger().info(f"y_map = {self.y_goal_map}")
    
         width = self.map.info.width
         height = self.map.info.height
@@ -113,6 +114,7 @@ class RRTConnect(Node):
     # **********************************
     def run(self):
         """ TODO - Implement the RRT-Connect algorithm """
+
         pass
         
     # **********************************
