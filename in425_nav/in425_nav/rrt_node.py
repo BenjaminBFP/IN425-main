@@ -13,7 +13,7 @@ import cv2
 import random as r
 
 class RRTConnect(Node):
-    def __init__(self, K=0, dq=0):
+    def __init__(self, K=10000, dq=10):
         Node.__init__(self, "rrt_connect_node")
 
         """ Attributes """
@@ -21,8 +21,10 @@ class RRTConnect(Node):
         self.path = []  #Path containing the waypoints computed by the RRT-Connect in the image reference frame
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)  #used to get the position of the robot
-        #TODO: add your attributes here....
-        
+        #TODO: add your attributes here...
+        self.K = K
+        self.dq = dq
+                 
         """ Publisher and Subscriber """
         self.create_subscription(PoseStamped, "/goal_pose", self.goalCb, 1)
         self.path_pub = self.create_publisher(Path, "/path", 1)
@@ -36,6 +38,8 @@ class RRTConnect(Node):
 
         self.x_robot_image = 0 
         self.y_robot_image = 0
+        self.compteur = 0 
+        self.points = []
         #TODO: create the related image
 
     def buildMapImage(self):
@@ -131,6 +135,12 @@ class RRTConnect(Node):
         self.get_logger().info(f"robot image x = {self.x_robot_image}")
         self.get_logger().info(f"robot image y = {self.y_robot_image}")
 
+        self.points.append((self.x_goal_image,self.y_goal_image))
+
+        if(len(self.points) % 2 == 0): 
+            self.get_logger().info(f"test {self.compteur}  = {self.is_collision_free_segment(self.points[self.compteur][0],self.points[self.compteur][1],self.points[self.compteur+1][0],self.points[self.compteur+1][1])}")
+            self.compteur += 2
+
         #self.run()
 
 
@@ -212,6 +222,38 @@ class RRTConnect(Node):
             return True      
         else:
             return False
+
+
+    def is_collision_free_segment(self, x1, y1, x2, y2) -> bool:
+        height, width = self.map_img.shape
+        x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
+
+        dx = abs(x2 - x1)
+        dy = abs(y2 - y1)
+        sx = 1 if x1 < x2 else -1
+        sy = 1 if y1 < y2 else -1
+        err = dx - dy
+        x, y = x1, y1
+
+        while True:
+            if x < 0 or x >= width or y < 0 or y >= height:
+                return False
+
+            pixel = self.map_img[y, x]  
+            if pixel == 0 or pixel == 80:   
+                return False
+
+            if x == x2 and y == y2:
+                return True
+
+            e2 = 2 * err
+            if e2 > -dy:
+                err -= dy
+                x   += sx
+            if e2 < dx:
+                err += dx
+                y   += sy
+
 
     def connect(self, Tgoal, qnew):
         """ Repeatedly call EXTEND(tree, q).
