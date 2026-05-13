@@ -177,8 +177,7 @@ class RRTConnect(Node):
                     break
 
             self.swap(Tstart, Tgoal)
-            List_Tstart, List_Tgoal = List_Tgoal, List_Tstart
-            Tstart, Tgoal = Tgoal, Tstart
+
 
         
     def rand_free_conf(self):
@@ -192,9 +191,9 @@ class RRTConnect(Node):
         """ Move the tree by one incremental step toward q.
             Stop immediately if an obstacle is encountered.
         """
-        direction = qrand - Tstart
+        direction = qrand - Tstart[-1]
         angle = np.arctan2(direction[1], direction[0])
-        qnew = Tstart + self.dq * np.array([[np.cos(angle)], [np.sin(angle)], [0], [0]])
+        qnew = Tstart[-1] + self.dq * np.array([[np.cos(angle)], [np.sin(angle)], [0], [0]])
         if self.is_collision(qnew):
             return None
         else:             
@@ -208,7 +207,7 @@ class RRTConnect(Node):
 
         if qnew[0] < 0 or qnew[0] >= width or qnew[1] < 0 or qnew[1] >= height:
             return True 
-        elif data[int(qnew[1]), int(qnew[0])] >= 1:  # OccupancyGrid data is row-major (y,x)
+        elif data[int(qnew[1]), int(qnew[0])] >= 1: 
             return True      
         else:
             return False
@@ -220,7 +219,12 @@ class RRTConnect(Node):
             ▶ an obstacle blocks further progress.
             This is the key innovation of RRT-Connect.
         """
-
+        while q != Tgoal[-1]:
+            qnew = self.extend(Tgoal, q)
+            if qnew is None:
+                return None
+            Tgoal.append(qnew)
+            q = qnew
         pass
     
     def swap(self, Tstart, Tgoal):
