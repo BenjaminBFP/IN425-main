@@ -225,6 +225,11 @@ class RRTConnect(Node):
     
     def swap(self, Tstart, Tgoal):
         """ Swap the trees """
+
+        temp = Tstart 
+        Tstart = Tgoal
+        Tgoal = temp 
+        
         pass
         
         
