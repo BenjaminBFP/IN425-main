@@ -10,7 +10,7 @@ from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 import numpy as np
 import cv2
-import numpy as np
+import random as r
 
 class RRTConnect(Node):
     def __init__(self, K=0, dq=0):
@@ -122,8 +122,10 @@ class RRTConnect(Node):
 
         self.get_robot_pose()
         
-        self.get_logger().info(f"robot image x = {self.robot_pose.x}")
-        self.get_logger().info(f"robot image y = {self.robot_pose.y}")
+        x_robot_image, y_robot_image = self.transition_map_image(self.robot_pose.x,self.robot_pose.y)
+        
+        self.get_logger().info(f"robot image x = {x_robot_image}")
+        self.get_logger().info(f"robot image y = {y_robot_image}")
 
         #self.run()
 
