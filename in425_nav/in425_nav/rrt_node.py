@@ -60,7 +60,7 @@ class RRTConnect(Node):
         self.get_logger().info(f"Image sauvegardée — min:{self.map_img.min()} max:{self.map_img.max()} unique:{np.unique(self.map_img)}")
 
         cv2.imshow("Map", self.map_img)
-        cv2.waitKey(0)
+        cv2.waitKey(1)
     def __del__(self):
         """ Called when the object is destroyed """
         cv2.destroyAllWindows() #destroy all the OpenCV windows you displayed
@@ -146,15 +146,15 @@ class RRTConnect(Node):
         Tgoal = np.array([[self.x_goal],[self.y_goal],[0],[1]])
 
         
-    def Rand_free_conf():
+    def Rand_free_conf(self):
         """ TODO - Sample a random configuration in the free space """
         pass
 
-    def Nearest_vertex():
+    def Nearest_vertex(self, qrand, G):
         """ TODO - Identifies the node of the graph closest to qrand """
         pass
 
-    def New_conf():
+    def New_conf(self, qnear, qrand, G):
         """ TODO - qnew = qnear + ∆q in the direction of qrand """
         pass
     
