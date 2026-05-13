@@ -146,19 +146,32 @@ class RRTConnect(Node):
         Tgoal = np.array([[self.x_goal],[self.y_goal],[0],[1]])
 
         
-    def Rand_free_conf(self):
-        """ TODO - Sample a random configuration in the free space """
+    def rand_free_conf(self):
+        """ Sample a random configuration in the free space """
+
         pass
 
-    def Nearest_vertex(self, qrand, G):
-        """ TODO - Identifies the node of the graph closest to qrand """
+    def extend(self, Tstart, qrand):
+        """ Move the tree by one incremental step toward q.
+            Stop immediately if an obstacle is encountered.
+        """
+
         pass
 
-    def New_conf(self, qnear, qrand, G):
-        """ TODO - qnew = qnear + ∆q in the direction of qrand """
+    def connect(self, Tgoal, qnew):
+        """ Repeatedly call EXTEND(tree, q).
+            Continue until:
+            ▶ q is reached, or
+            ▶ an obstacle blocks further progress.
+            This is the key innovation of RRT-Connect.
+        """
+
         pass
     
+    def swap(self, Tstart, Tgoal):
+        """ Swap the trees """
         pass
+        
         
     # **********************************
     def publishPath(self):
