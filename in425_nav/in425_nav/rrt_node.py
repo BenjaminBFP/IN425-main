@@ -306,7 +306,7 @@ class RRTConnect(Node):
 
             path_rviz.append(pose)
         msg.poses = path_rviz
-        self.path_pub.publish(msg)
+        self.path_pub.publish(msg) 
 
 
 def main():
