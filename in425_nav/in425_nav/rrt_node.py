@@ -279,14 +279,25 @@ class RRTConnect(Node):
     def publishPath(self):
         """ Send the computed path so that RVIZ displays it """
         """ TODO - Transform the waypoints from pixels coordinates to meters in the map frame """
+        
         msg = Path()
         msg.header.frame_id = "map"
         msg.header.stamp = self.get_clock().now().to_msg()
+
+        res = round(self.map.info.resolution, 3)
+        height = self.map.info.height
+        dx = self.map.info.origin.position.x
+        dy = self.map.info.origin.position.y
+
         path_rviz = []
-        for pose_img in self.path:
+        for (x_image, y_image) in self.path:   #voir comment est constitué self.path car je ne sais pas si (x_image, y_image) est le bon itérateur à utiliser ici
             pose = PoseStamped()
-            # pose.pose.position.x = ...
-            # pose.pose.position.y = ...
+            
+            y_discrete = (height - 1) - y_image
+            pose.pose.position.x = x_image * res + ox
+            pose.pose.position.y = y_discrete * res + oy
+            pose.pose.position.z = 0.0
+
             path_rviz.append(pose)
         msg.poses = path_rviz
         self.path_pub.publish(msg)
