@@ -202,9 +202,15 @@ class RRTConnect(Node):
             Stop immediately if an obstacle is encountered.
         """
         direction = qrand - Tstart[-1]
+
+        for q in Tstart:
+            if qrand - q < direction:
+                direction = qrand - q 
+                idx = Tstart.index(q)
+                
         angle = np.arctan2(direction[1], direction[0])
-        qnew = Tstart[-1] + self.dq * np.array([[np.cos(angle)], [np.sin(angle)], [0], [0]])
-        if self.is_collision(qnew):
+        qnew = Tstart[idx] + self.dq * np.array([[np.cos(angle)], [np.sin(angle)], [0], [0]])
+        if self.is_collision_free_segment(Tstart[idx][0], Tstart[idx][1], qnew[0], qnew[1]):
             return None
         else:             
             return qnew
@@ -261,7 +267,7 @@ class RRTConnect(Node):
             ▶ an obstacle blocks further progress.
             This is the key innovation of RRT-Connect.
         """
-        while qnew != Tgoal[-1] or not self.is_collision(qnew):
+        while qnew != Tgoal[-1] or not self.is_collision_free_segment(Tgoal[-1][0], Tgoal[-1][1], qnew[0], qnew[1]):
             q = self.extend(Tgoal, qnew)
             if q is None:
                 return False
