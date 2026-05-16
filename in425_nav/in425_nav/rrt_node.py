@@ -169,25 +169,17 @@ class RRTConnect(Node):
         
         Tstart = np.array([[self.x_robot_image],[self.y_robot_image],[0],[1]])
         Tgoal = np.array([[self.x_goal_image],[self.y_goal_image],[0],[1]])
-        
-        List_Tstart = [Tstart]
-        List_Tgoal = [Tgoal]
-
-        while np.linalg.norm(Tstart-Tgoal)>0.5:
+        Tstart_idx = [(0,0)]
+        Tgoal_idx = [(0,0)]
+        while True:
             qrand = self.rand_free_conf()
             qnew = self.extend(Tstart, qrand)
-
             if qnew is not None:
-                List_Tstart.append(qnew)
-                qnew_goal = self.connect(Tgoal, qnew)
-                Tstart = qnew
-
-                if qnew_goal is not None:
-                    List_Tgoal.append(qnew_goal)
+                if self.connect(Tgoal, qnew) == True :
+                    self.recontruct_path(Tstart, Tgoal)
                     break
-
             self.swap(Tstart, Tgoal)
-
+        self.recontruct_path(Tstart, Tgoal)
 
         
     def rand_free_conf(self):
@@ -201,6 +193,10 @@ class RRTConnect(Node):
         """ Move the tree by one incremental step toward q.
             Stop immediately if an obstacle is encountered.
         """
+        """ Doit retourner donner l'idx de connection du point qnew
+            la liste Idx est de la forme [(poistion du parent 1, position du point 1), ...]     
+        """
+
         direction = qrand - Tstart[-1]
 
         for q in Tstart:
@@ -285,7 +281,10 @@ class RRTConnect(Node):
         Tgoal = temp 
 
         return Tstart, Tgoal
-        
+    def recontruct_path(self, Tstart, Tgoal):
+        """ Reconstruct the path from the two trees """
+        path = Tstart+list(reversed(Tgoal))
+        self.path = path    
         
     # **********************************
     def publishPath(self):
